@@ -21,7 +21,8 @@ app.use(cors({
     methods: ['GET', 'POST'],
     credentials: true
 }));
-const users = {};
+
+
 const fetchRecentMessages = async (limit = 20) => {
     return await Message.find().sort({ timestamp: -1 }).limit(limit);
 };
@@ -33,6 +34,10 @@ const fetchEarlierMessages = async (timestamp, limit = 20) => {
         .sort({ timestamp: -1 })
         .limit(limit);
 };
+
+
+
+
 
 
 io.on('connection', (socket) => {
@@ -66,19 +71,20 @@ io.on('connection', (socket) => {
             await newUser.save();
             console.log('User saved:', newUser);
 
-            users[socket.id] = newUser._id;
         } catch (error) {
             console.error('Error saving user:', error.message);
         }
 
         socket.broadcast.emit('user-joined', name);
     });
+
+
     socket.on('send', async (message) => {
-        socket.broadcast.emit('receive', { message: message, name: users[socket.id] });
+        socket.broadcast.emit('receive', { message: message.message, name: message.name });
         try {
             const newMessage = new Message({
-                userId: users[socket.id],
-                text: message
+                username: message.name, 
+                text: message.message 
             });
             await newMessage.save();
             console.log('Message stored:', newMessage);
