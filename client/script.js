@@ -31,6 +31,9 @@ function displayEarlierMessage(messages) {
 }
 
 
+
+
+
 let loading = false;
 let earliestMessageTimestamp;
 
@@ -43,36 +46,44 @@ socket.on('loadMessages', (messages) => {
 
 
 
+
+
+
 messagesContainer.addEventListener('scroll', function () {
-    if (this.scrollTop === 0 && !loading) {
-        console.log("working")
-        loading = true;
+    // Check if we're at or near the top and if we're not already loading
+    if (messagesContainer.scrollTop <= 50 && !loading) {
+        console.log("Fetching earlier messages...");
+        loading = true; // Set loading state to true
+
+        // Emit the event to load earlier messages, passing the timestamp of the earliest message
         socket.emit('loadEarlierMessages', earliestMessageTimestamp);
     }
 });
 
 
 
-
-
-
+// Listen for earlier messages from the server
 socket.on('displayEarlierMessages', (messages) => {
     if (messages.length > 0) {
+        // Update the earliestMessageTimestamp with the timestamp of the first message
         earliestMessageTimestamp = messages[0].timestamp;
 
-        console.log(messages)
+        // Save the current scroll position and height before adding new messages
+        const oldScrollHeight = messagesContainer.scrollHeight;
+        const oldScrollTop = messagesContainer.scrollTop;
 
+        // Prepend the new messages to the chat container
+        displayEarlierMessage(messages.reverse()); // Function to add messages at the top
 
-        displayEarlierMessage(messages)
-        // displayMessages(messages);
-        // console.log("sdfsd")
-        loading = false;
+        // Adjust the scroll position after prepending new messages
+        const newScrollHeight = messagesContainer.scrollHeight;
+        messagesContainer.scrollTop = newScrollHeight - oldScrollHeight + oldScrollTop;
+    } else {
+        console.log("No more earlier messages to load.");
     }
+
+    loading = false; // Reset loading state
 });
-
-
-
-
 
 
 

@@ -36,7 +36,6 @@ const fetchEarlierMessages = async (timestamp, limit = 20) => {
 
 
 io.on('connection', (socket) => {
-    console.log('A user connected');
     fetchRecentMessages().then(messages => {
         socket.emit('loadMessages', messages.reverse());
     });
@@ -50,6 +49,11 @@ io.on('connection', (socket) => {
             socket.emit('displayEarlierMessages', messages.reverse());
         });
     });
+
+
+
+
+
 
 
 
