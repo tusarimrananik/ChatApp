@@ -6,4 +6,7 @@ const messageSchema = new mongoose.Schema({
     timestamp: { type: Date, default: Date.now },
 });
 
+messageSchema.index({ timestamp: -1 });
+
+
 module.exports = mongoose.model('Message', messageSchema);
