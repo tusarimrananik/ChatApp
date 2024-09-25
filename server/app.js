@@ -80,11 +80,11 @@ io.on('connection', (socket) => {
 
 
     socket.on('send', async (message) => {
-        socket.broadcast.emit('receive', { message: message.message, name: message.name });
+        socket.broadcast.emit('receive', { message: message.message, name: message.savedUsername });
         try {
             const newMessage = new Message({
-                username: message.name, 
-                text: message.message 
+                username: message.savedUsername,
+                text: message.message
             });
             await newMessage.save();
             console.log('Message stored:', newMessage);

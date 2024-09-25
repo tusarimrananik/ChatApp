@@ -4,13 +4,75 @@ const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const messagesContainer = document.getElementById('messages');
 const wrapper = document.querySelector('.chat');
-let name = prompt("enter Your Name")
-if (name == "") {
-    name = "Anonymous Participant"
+let savedUsername = localStorage.getItem("username");
+
+
+
+
+
+window.onload = function () {
+    const modal = document.getElementById("nameModal");
+    const joinBtn = document.getElementById("joinBtn");
+    const usernameInput = document.getElementById("username");
+    const errorMessage = document.getElementById("error-message");
+
+    // Check if username is already in local storage
+    if (savedUsername) {
+        console.log(`Welcome back, ${savedUsername}!`); // Welcome back if username exists
+    } else {
+        modal.style.display = "block"; // Show the modal when the page loads
+    }
+
+    joinBtn.onclick = function () {
+        const username = usernameInput.value.trim();
+        if (username) {
+            localStorage.setItem("username", username); // Save username to local storage
+            modal.style.display = "none"; // Close the modal
+            // You can also add logic here to proceed to the chat room
+
+            savedUsername = localStorage.getItem("username");
+        } else {
+            errorMessage.textContent = "Please enter your username."; // Set the error message
+            errorMessage.style.display = "block"; // Show the error message
+        }
+    }
+
+    // Optional: close modal if clicked outside (you can remove this if not needed)
+    window.onclick = function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none"; // Close modal if clicked outside
+        }
+    }
 }
-socket.emit('new-user-joined', name);
-messagesContainer.innerHTML = `${name} Joined the chat!`
+
+
+
+// if (!savedUsername) {
+//     socket.emit('new-user-joined', savedUsername);
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+console.log(`${savedUsername} Joined the chat!`)
+
+
 socket.emit('request-all-messages');
+
+
 function displayMessages(messages) {
     messages.forEach(message => {
         const messageElement = document.createElement('p');
@@ -98,9 +160,9 @@ messageInput.addEventListener('keydown', (event) => {
 });
 sendButton.addEventListener('click', () => {
     let message = messageInput.value;
-    socket.emit('send', { message, name });
+    socket.emit('send', { message, savedUsername });
     const messageElement = document.createElement('p');
-    messageElement.textContent = `${name}: ${message}`;
+    messageElement.textContent = `${savedUsername}: ${message}`;
     messagesContainer.appendChild(messageElement);
     messageInput.value = "";
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -110,3 +172,12 @@ socket.on('receive', data => {
     messageElement.textContent = `${data.name}: ${data.message}`;
     messagesContainer.appendChild(messageElement);
 });
+
+
+
+
+
+
+
+
+

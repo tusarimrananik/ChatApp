@@ -26,13 +26,28 @@
         <div class="chat">
             <div class="messages" id="messages"></div>
 
-            
+
             <div class="input-area">
                 <input type="text" id="messageInput" placeholder="Type your message...">
                 <button id="sendButton">Send</button>
             </div>
         </div>
     </div>
+
+
+    <div id="nameModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Welcome to the Chat Room</div>
+            <p class="modal-description">Please enter your username to join:</p>
+            <input type="text" id="username" class="username-input" placeholder="Your Username" />
+            <div id="error-message" class="error-message"></div> <!-- Error message placeholder -->
+            <button id="joinBtn" class="join-button">Join</button>
+        </div>
+    </div>
+
+
+
+
 </body>
 
 </html>
