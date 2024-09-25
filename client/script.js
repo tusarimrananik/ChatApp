@@ -23,11 +23,9 @@ messageInput.addEventListener('keydown', (event) => {
 sendButton.addEventListener('click', () => {
     let message = messageInput.value;
     socket.emit('send', message);
-
     const messageElement = document.createElement('p');
     messageElement.textContent = `${name}: ${message}`;
     messagesContainer.appendChild(messageElement);
-
     messageInput.value = "";
 });
 
