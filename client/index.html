@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord-like Chat Interface</title>
+    <!-- Socket.IO client-side library -->
+    <script src="http://localhost:8000/socket.io/socket.io.js"></script>
+    <!-- Your custom JS -->
+    <script src="script.js" defer></script>
+    <!-- Link to your CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Channels</h2>
+            <ul>
+                <li># general</li>
+                <li># random</li>
+                <li># announcements</li>
+            </ul>
+        </div>
+        <div class="chat">
+            <div class="messages" id="messages"></div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Type your message...">
+                <button id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

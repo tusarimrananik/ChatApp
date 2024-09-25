@@ -1,0 +1,79 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #2C2F33;
+    color: white;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #23272A;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    color: #7289DA;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px 0;
+    color: #99AAB5;
+}
+
+.chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.message {
+    margin-bottom: 10px;
+}
+
+.message .username {
+    font-weight: bold;
+    color: #7289DA;
+}
+
+.input-area {
+    display: flex;
+    padding: 10px;
+    background-color: #40444B;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background-color: #2C2F33;
+    color: white;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #7289DA;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #5b6eae;
+}
