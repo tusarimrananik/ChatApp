@@ -12,13 +12,60 @@ body {
 }
 
 .sidebar {
-    width: 250px;
+
+
+    display: flex;
+    flex-direction: column;
+    width: 20%;
     background-color: #23272A;
+    /* background-color: #0090fe; */
+
     padding: 20px;
+    justify-content: space-between;
 }
+
+
+.channels {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+
+}
+
+
+
+li {
+    word-wrap: break-word;
+    /* Wrap long words */
+    word-break: break-all;
+    /* Break the word at any point if necessary */
+    white-space: normal;
+    /* Allow the text to wrap */
+}
+
+
+.username {
+    margin-right: 10px;
+    cursor: pointer;
+    color: #7289DA;
+    /* Discord blue for username */
+    word-wrap: break-word;
+    /* Wrap long words */
+    word-break: break-all;
+    /* Break the word at any point if necessary */
+    white-space: normal;
+    /* Allow the text to wrap */
+}
+
 
 .sidebar h2 {
     color: #7289DA;
+    word-wrap: break-word;
+    /* Wrap long words */
+    word-break: break-all;
+    /* Break the word at any point if necessary */
+    white-space: normal;
+    /* Allow the text to wrap */
 }
 
 .sidebar ul {
@@ -78,13 +125,6 @@ button {
 button:hover {
     background-color: #5b6eae;
 }
-
-
-
-
-
-
-
 
 .modal {
     display: none;
@@ -157,7 +197,6 @@ button:hover {
     /* Red on hover */
 }
 
-
 .error-message {
     color: #ffffff;
     /* Text color */
@@ -176,12 +215,9 @@ button:hover {
     /* Slightly darker red border */
 }
 
-
-
-
 /* User information styles */
 .user-info {
-    position: absolute;
+
     bottom: 20px;
     left: 20px;
     background-color: #3c4043;
@@ -190,14 +226,16 @@ button:hover {
     border-radius: 5px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    /* Allow items to wrap */
+
 }
 
-.username {
-    margin-right: 10px;
-    cursor: pointer;
-    color: #7289DA;
-    /* Discord blue for username */
-}
+
+
+
+
 
 .logout-button {
     display: none;
@@ -214,4 +252,309 @@ button:hover {
 .logout-button:hover {
     background-color: #dc3d3d;
     /* Darker red on hover */
+}
+
+
+
+/* The switch container */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    /* Reduced width */
+    height: 28px;
+    /* Reduced height */
+}
+
+/* Hide the default checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #40444b;
+    /* Darker background color */
+    transition: .4s;
+    border-radius: 28px;
+    /* Slightly smaller radius */
+}
+
+/* The circle inside the slider */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    /* Reduced circle height */
+    width: 22px;
+    /* Reduced circle width */
+    left: 3px;
+    /* Adjusted position */
+    bottom: 3px;
+    /* Adjusted position */
+    background-color: #dcddde;
+    /* Light color for the circle */
+    transition: .4s;
+    border-radius: 50%;
+}
+
+/* Toggle ON state */
+input:checked+.slider {
+    background-color: #7289da;
+    /* Discord's blue color */
+}
+
+/* Move the circle to the right when toggled */
+input:checked+.slider:before {
+    transform: translateX(22px);
+    /* Adjusted translation for smaller size */
+}
+
+
+
+
+input[type="number"] {
+    width: 2.5ch;
+    /* Fit two digits */
+    padding: 5px;
+    font-size: 16px;
+    background-color: #2f3136;
+    border: 1px solid #40444b;
+    border-radius: 3px;
+    color: #dcddde;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s ease-in-out;
+}
+
+input[type="number"]:focus {
+    border-color: #7289da;
+    /* Discord's highlight color */
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+    /* Removes spin buttons in Firefox */
+}
+
+
+
+
+
+ul {
+    list-style: none;
+    /* Remove default list styles */
+    padding: 0;
+    /* Remove padding */
+    margin: 0;
+    /* Remove margin */
+}
+
+li {
+    padding: 10px 15px;
+    /* Add padding for better spacing */
+    background-color: #23272a;
+    /* Default background color */
+    color: #dcddde;
+    /* Default text color */
+    border-radius: 3px;
+    /* Slightly rounded corners */
+    transition: background-color 0.2s ease;
+    /* Smooth transition */
+    cursor: pointer;
+    /* Pointer cursor on hover */
+}
+
+li:hover {
+    background-color: #40444b;
+    /* Background color on hover */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.notification {
+    display: none;
+    /* Initially hidden */
+    position: fixed;
+    right: 20px;
+    /* Position from the bottom */
+    top: 20px;
+    /* Position from the right */
+    background-color: #40444b;
+    /* Notification background color */
+    color: #dcddde;
+    /* Text color */
+    border-radius: 5px;
+    /* Rounded corners */
+    padding: 2px 15px;
+    /* Padding inside the notification */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    /* Shadow effect */
+    opacity: 0;
+    /* Initially transparent */
+    transform: translateY(100%);
+    /* Start off-screen at the bottom */
+    transition: opacity 0.3s ease;
+    /* Smooth opacity transition */
+    z-index: 1000;
+    /* Ensure it appears above other content */
+}
+
+.notification.show {
+    display: block;
+    /* Show the notification */
+    opacity: 1;
+    /* Fully visible */
+    transform: translateY(0);
+    /* Reset the translate */
+    animation: slideIn 0.5s forwards;
+    /* Slide in animation */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translate(100%, 0%);
+        /* Start from the top right corner */
+    }
+
+    to {
+        transform: translate(0, 0);
+        /* Move to its final position */
+    }
+}
+
+
+
+@keyframes slideOut {
+    from {
+        transform: translate(0, 0);
+        /* Start from the final position */
+    }
+
+    to {
+        transform: translate(100%, 0%);
+        /* Slide back to the top right corner */
+    }
+}
+
+.notification-content {
+    display: flex;
+    /* Flexbox for alignment */
+    justify-content: space-between;
+    /* Space between text and close button */
+    align-items: center;
+    /* Center vertically */
+}
+
+.close-btn {
+    background: none;
+    /* No background */
+    border: none;
+    /* No border */
+    color: #dcddde;
+    /* Close button color */
+    font-size: 20px;
+    /* Font size for close button */
+    cursor: pointer;
+    /* Pointer cursor */
+    margin-left: 15px;
+    /* Space from text */
+}
+
+
+
+
+.notification {
+    display: none;
+    /* Initially hidden */
+    opacity: 0;
+    /* Start as invisible */
+    transition: opacity 0.5s ease;
+    /* Smooth transition */
+}
+
+.notification.show {
+    display: block;
+    /* Show the notification */
+    opacity: 1;
+    /* Fully visible */
+}
+
+
+
+
+
+.notification {
+    position: fixed;
+    /* Fixed position for notifications */
+    top: 20px;
+    /* Starting distance from the top */
+    right: 20px;
+    /* Distance from the right */
+    background-color: #40444b;
+    /* Background color */
+    color: #dcddde;
+    /* Text color */
+    padding: 15px;
+    /* Padding around the text */
+    border-radius: 5px;
+    /* Rounded corners */
+    display: none;
+    /* Initially hidden */
+    opacity: 0;
+    /* Start as invisible */
+    transition: opacity 0.5s ease;
+    /* Smooth transition */
+    z-index: 1000;
+    /* Ensure it's on top */
+    margin-top: 10px;
+    /* Space between notifications */
+}
+
+.notification.show {
+    display: block;
+    /* Show the notification */
+    opacity: 1;
+    /* Fully visible */
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateY(0);
+        /* Start in place */
+        opacity: 1;
+        /* Fully visible */
+    }
+
+    to {
+        transform: translateY(-50px);
+        /* Move up */
+        opacity: 0;
+        /* Fade out */
+    }
 }

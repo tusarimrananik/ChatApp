@@ -23,10 +23,6 @@ app.use(cors({
     credentials: true
 }));
 
-
-
-
-
 const fetchRecentMessages = async (limit = 20) => {
     try {
         // Fetch regular messages
@@ -48,44 +44,18 @@ const fetchRecentMessages = async (limit = 20) => {
     }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const fetchRecentMessages = async (limit = 20) => {
-//     return await Message.find().sort({ timestamp: -1 }).limit(limit);
-// };
-
-
-
 const fetchEarlierMessages = async (timestamp, limit = 20) => {
     return await Message.find({ timestamp: { $lt: timestamp } })
         .sort({ timestamp: -1 })
         .limit(limit);
 };
 
-
-
-
-
-
 io.on('connection', (socket) => {
     fetchRecentMessages().then(messages => {
         socket.emit('loadMessages', messages.reverse());
+
+        console.log('new socket connection!', messages.reverse())
     });
-
-
-
-
 
     socket.on('loadEarlierMessages', (timestamp) => {
         fetchEarlierMessages(timestamp).then(messages => {
@@ -93,27 +63,16 @@ io.on('connection', (socket) => {
         });
     });
 
-
-
-
-
-
-
-
-
-
     socket.on('new-user-joined', async (name) => {
-
         socket.broadcast.emit('user-joined', name);
     });
-
 
     socket.on('send', async (message) => {
         socket.broadcast.emit('receive', { message: message.message, name: message.savedUsername });
         try {
             const newMessage = new Message({
                 username: message.savedUsername,
-                text: message.message
+                message: message.message
             });
             await newMessage.save();
             console.log('Message stored:', newMessage);
@@ -122,56 +81,19 @@ io.on('connection', (socket) => {
         }
     });
 
-
-
-
-    // socket.on('temp-message', (data) => {
-    //     const { username, message, time } = data;
-    //     const expirationTime = new Date(Date.now() + time); // Set expiration time to 30 seconds later
-    //     const newMessage = new TempMessage({
-    //         username: username,
-    //         message: message,
-    //         expirationTime: expirationTime
-    //     });
-
-    //     newMessage.save((err, savedMessage) => {
-    //         if (err) {
-    //             console.error("Error storing message:", err);
-    //         } else {
-    //             // Emit the temp message to all clients
-    //             io.emit('temp-message-received', { id: savedMessage._id, username, message, expirationTime });
-
-    //             // Set a timer to delete the message after 30 seconds
-    //             setTimeout(() => {
-    //                 TempMessage.findByIdAndDelete(savedMessage._id, (err) => {
-    //                     if (!err) {
-    //                         io.emit('temp-message-deleted', savedMessage._id); // Notify clients about the deletion
-    //                     }
-    //                 });
-    //             }, 30000); // 30 seconds delay
-    //         }
-    //     });
-    // });
-
-
     socket.on('temp-message', async (data) => {
-        console.log('working!')
         const { username, message, timer } = data;
         console.log("Username:", username, "Message:", message);
-
         const expirationTime = new Date(Date.now() + timer); // Set expiration time to 30 seconds later
-
         const newMessage = new TempMessage({
             username: username,
             message: message,
             expirationTime: expirationTime
         });
-
         try {
             const savedMessage = await newMessage.save(); // Save message using async/await
             // Emit the message to all clients
             io.emit('temp-message-received', { id: savedMessage._id, username, message, expirationTime });
-
             // Set a timer to delete the message after 30 seconds
             setTimeout(async () => {
                 try {
@@ -180,84 +102,24 @@ io.on('connection', (socket) => {
                 } catch (err) {
                     console.error("Error deleting message:", err);
                 }
-            }, 30000);
+            }, timer);
         } catch (err) {
             console.error("Error storing message:", err);
         }
     });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-setInterval(async () => {
-    try {
-        const now = new Date();
-        await TempMessage.deleteMany({ expirationTime: { $lte: now } }); // Delete expired messages
-        console.log("Expired messages cleaned up");
-    } catch (err) {
-        console.error("Error cleaning up expired messages:", err);
-    }
-}, 60000); // Run every minute
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// setInterval(async () => {
+//     try {
+//         const now = new Date();
+//         await TempMessage.deleteMany({ expirationTime: { $lte: now } }); // Delete expired messages
+//         console.log("Expired messages cleaned up");
+//     } catch (err) {
+//         console.error("Error cleaning up expired messages:", err);
+//     }
+// }, 60000); // Run every minute
 
 http.listen(8000, () => {
     console.log('Server is running on port 8000');

@@ -1,11 +1,8 @@
-
 const socket = io('http://localhost:8000');
 const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const messagesContainer = document.getElementById('messages');
 const wrapper = document.querySelector('.chat');
-let savedUsername = localStorage.getItem("username");
-
 const modal = document.getElementById("nameModal");
 const joinBtn = document.getElementById("joinBtn");
 const usernameInput = document.getElementById("username");
@@ -13,20 +10,71 @@ const errorMessage = document.getElementById("error-message");
 const usernameDisplay = document.getElementById("usernameDisplay");
 const userInfo = document.getElementById("userInfo");
 const logoutButton = document.getElementById("logoutButton");
+const themeToggleDissaparing = document.getElementById("themeToggle");
+const timerDissaparing = document.getElementById("timer");
+let savedUsername = localStorage.getItem("username");
+let savedIsDissaparing = localStorage.getItem("isDissaparing");
+let timerDissapar = localStorage.getItem("timeDissaparing");
+
+
+
+if (savedIsDissaparing === "ON") {
+    themeToggleDissaparing.checked = true;
+}
+
+
+if (timerDissapar) {
+    timerDissaparing.value = timerDissapar;
+}
+
+
+
+timerDissaparing.addEventListener('change', () => {
+    let newTimer = timerDissaparing.value;
+    localStorage.setItem("timeDissaparing", newTimer);
+
+})
 
 
 
 
+
+themeToggleDissaparing.addEventListener('change', () => {
+    if (themeToggleDissaparing.checked) {
+        localStorage.setItem('isDissaparing', 'ON');
+
+        newNotification("message dissapering is on")
+
+
+
+
+    } else {
+        localStorage.setItem('isDissaparing', 'OFF');
+        newNotification("message dissapering is off")
+
+    }
+})
+
+
+
+function newNotification(info) {
+    document.getElementById('notification').innerText = info;
+    showNotification()
+    slideOut(document.getElementById('notification'));
+}
+
+
+
+
+let disappearingMessage = true;
+let timer = 100000;
 window.onload = function () {
-
     if (savedUsername) {
-        console.log(`Welcome back, ${savedUsername}!`); // Welcome back if username exists
         usernameDisplay.innerText = savedUsername; // Display the saved username
         userInfo.style.display = 'flex'; // Show the user info section
     } else {
         modal.style.display = "block"; // Show the modal when the page loads
     }
-
     joinBtn.onclick = function () {
         const username = usernameInput.value.trim();
         if (username) {
@@ -44,8 +92,6 @@ window.onload = function () {
             errorMessage.style.display = "block"; // Show the error message
         }
     }
-
-    // Show/hide logout button on username click
     usernameDisplay.onclick = function () {
         const isDisplayed = logoutButton.style.display === 'block';
         logoutButton.style.display = isDisplayed ? 'none' : 'block';
@@ -57,11 +103,8 @@ window.onload = function () {
         // usernameInput.value = ''; // Clear username input
         // modal.style.display = 'block'; // Show the modal again
         // logoutButton.style.display = 'none'; // Hide the logout button after logout
-
-
         window.location.reload();
     }
-
     // Optional: close modal if clicked outside (you can remove this if not needed)
     window.onclick = function (event) {
         if (event.target === modal) {
@@ -71,46 +114,83 @@ window.onload = function () {
 }
 
 
+function handleTempMessageReceived(data) {
+    const { id, username, message, expirationTime } = data;
+    console.log(data);
+    console.log("woorking")
+    console.log(id, username, message, expirationTime);
+    // Create a message element
+    const messageElement = document.createElement('div');
+    messageElement.id = id;
+    messageElement.classList.add('message');
+    messageElement.innerHTML = `<strong>${username}:</strong> ${message} <span class="countdown" id="countdown-${id}"></span>`;
+    document.getElementById('messages').appendChild(messageElement);
+    // Calculate remaining time in seconds
+    const remainingTime = Math.floor((new Date(expirationTime) - Date.now()) / 1000);
+    // Update the countdown timer every second
+    let timeLeft = remainingTime;
+
+
+    ///multiple
+
+    const countdownElement = document.getElementById(`countdown-${id}`);
+    countdownElement.textContent = ` (${timeLeft}s)`; // Initial timer display
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    ////here is the problem
+
+    const countdownInterval = setInterval(() => {
+        timeLeft--;
+        countdownElement.textContent = ` (${timeLeft}s)`;
+        // If time is up, remove the message and clear the interval
+        if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+            messageElement.remove();
+        }
+    }, 1000); // Update every second
+}
 
 
 
-
-
-console.log(`${savedUsername} Joined the chat!`)
-
-
-socket.emit('request-all-messages');
 
 
 function displayMessages(messages) {
-
-    console.log(messages);
-
-
-
-
-
-
     messages.forEach(message => {
+        console.log(message); // Log the message object to check its structure
 
-        if (message.expirationTime) {
+        // Create a temporary message object with the required properties
+        const tempMessage = {
+            id: message._id, // Map _id to id
+            username: message.username,
+            message: message.message, // Map text to message
+            expirationTime: message.expirationTime // Set to null if not a temporary message
+        };
 
-
-            handleTempMessageReceived(message);
-
-
-
-            // Handle temporary message with expiration time
-            console.log(`Temporary Message: ${message.message} by ${message.username}, expires at: ${message.expirationTime}`);
+        if (tempMessage.expirationTime) {
+            handleTempMessageReceived(tempMessage);
         } else {
             const messageElement = document.createElement('p');
-            messageElement.textContent = `${message.username}: ${message.text}`;
+            messageElement.textContent = `${tempMessage.username}: ${tempMessage.message}`;
             messagesContainer.appendChild(messageElement);
         }
-
     });
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -134,6 +214,8 @@ let earliestMessageTimestamp;
 
 
 socket.on('loadMessages', (messages) => {
+
+    console.log("load message is fired", messages)
     if (messages.length > 0) {
         earliestMessageTimestamp = messages[0].timestamp;
     }
@@ -179,108 +261,7 @@ messageInput.addEventListener('keydown', (event) => {
     }
 });
 
-
-
-
-
-
-
-
-// socket.on('temp-message-received', (data) => {
-//     const { id, username, message, expirationTime } = data;
-
-
-//     console.log(id, username, message, expirationTime)
-//     // Create a message element
-//     const messageElement = document.createElement('div');
-//     messageElement.id = id;
-//     messageElement.classList.add('message');
-//     messageElement.innerHTML = `<strong>${username}:</strong> ${message} <span class="countdown" id="countdown-${id}"></span>`;
-
-//     document.getElementById('messages').appendChild(messageElement);
-
-//     // Calculate remaining time in seconds
-//     const remainingTime = Math.floor((new Date(expirationTime) - Date.now()) / 1000);
-
-//     // Update the countdown timer every second
-//     let timeLeft = remainingTime;
-
-//     const countdownElement = document.getElementById(`countdown-${id}`);
-//     countdownElement.textContent = ` (${timeLeft}s)`; // Initial timer display
-
-//     const countdownInterval = setInterval(() => {
-//         timeLeft--;
-//         countdownElement.textContent = ` (${timeLeft}s)`;
-
-//         // If time is up, remove the message and clear the interval
-//         if (timeLeft <= 0) {
-//             clearInterval(countdownInterval);
-//             messageElement.remove();
-//         }
-//     }, 1000); // Update every second
-// });
-
-
-
-
-
-function handleTempMessageReceived(data) {
-    const { id, username, message, expirationTime } = data;
-
-    console.log(id, username, message, expirationTime);
-
-    // Create a message element
-    const messageElement = document.createElement('div');
-    messageElement.id = id;
-    messageElement.classList.add('message');
-    messageElement.innerHTML = `<strong>${username}:</strong> ${message} <span class="countdown" id="countdown-${id}"></span>`;
-
-    document.getElementById('messages').appendChild(messageElement);
-
-    // Calculate remaining time in seconds
-    const remainingTime = Math.floor((new Date(expirationTime) - Date.now()) / 1000);
-
-    // Update the countdown timer every second
-    let timeLeft = remainingTime;
-
-    const countdownElement = document.getElementById(`countdown-${id}`);
-    countdownElement.textContent = ` (${timeLeft}s)`; // Initial timer display
-
-    const countdownInterval = setInterval(() => {
-        timeLeft--;
-        countdownElement.textContent = ` (${timeLeft}s)`;
-
-        // If time is up, remove the message and clear the interval
-        if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
-            messageElement.remove();
-        }
-    }, 1000); // Update every second
-}
-
-
-
-
-
-
-
 socket.on('temp-message-received', handleTempMessageReceived);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -303,40 +284,6 @@ socket.on('temp-message-deleted', (messageId) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-let disappearingMessage = true;
-let timer = 10000;
-let userN = "Test"
 
 
 sendButton.addEventListener('click', () => {
@@ -401,6 +348,60 @@ socket.on('receive', data => {
     messageElement.textContent = `${data.name}: ${data.message}`;
     messagesContainer.appendChild(messageElement);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+let notificationQueue = []; // Queue to hold notifications
+
+function showNotification(info, duration = 3000) {
+    const notification = document.createElement('div'); // Create a new notification element
+    notification.classList.add('notification'); // Add notification class
+    notification.innerText = info; // Set the notification text
+    document.body.appendChild(notification); // Append it to the body
+
+    notification.classList.add('show'); // Show the notification
+    notification.style.display = 'block'; // Ensure it's set to block when showing
+
+    // Automatically hide after the specified duration
+    setTimeout(() => {
+        slideOut(notification); // Call slide out function
+    }, duration);
+}
+
+function slideOut(notification) {
+    notification.style.animation = 'slideOut 0.5s forwards'; // Set the slide out animation
+    notification.style.opacity = '0'; // Fade out the opacity
+
+    // Remove the notification after the animation completes
+    setTimeout(() => {
+        notification.remove(); // Remove the notification from the DOM
+    }, 500); // Duration should match the animation duration
+}
+
+// Close button functionality
+document.querySelector('.close-btn').onclick = function () {
+    const notification = document.querySelector('.notification.show'); // Get the currently displayed notification
+    if (notification) {
+        slideOut(notification); // Close it immediately
+    }
+};
+
+// Example usage
+showNotification("Your first notification!", 3000);
+showNotification("Your second notification!", 5000);
+showNotification("Your third notification!", 4000);
+
+
 
 
 

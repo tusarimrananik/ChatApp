@@ -14,25 +14,79 @@
 </head>
 
 <body>
+
+
+
     <div class="container">
+
+
         <div class="sidebar">
-            <h2>Channels</h2>
-            <ul>
-                <li># general</li>
-                <li># random</li>
-                <li># announcements</li>
-            </ul>
+            <div class="channels">
+                <h2>Channels</h2>
+                <ul>
+                    <li># general</li>
+                    <li># random</li>
+                    <li># announcements</li>
+                </ul>
+            </div>
+
+
+            <div class="user-info" id="userInfo">
+                <span class="username" id="usernameDisplay"></span>
+                <input type="number" id="timer">
+
+                <label class="switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider"></span>
+                  </label>
+
+                <button class="logout-button" id="logoutButton">Logout</button>
+            </div>
+
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <div class="chat">
             <div class="messages" id="messages"></div>
-
-
             <div class="input-area">
                 <input type="text" id="messageInput" placeholder="Type your message...">
                 <button id="sendButton">Send</button>
             </div>
         </div>
+
+
+
+
+
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     <div id="nameModal" class="modal">
@@ -45,11 +99,16 @@
         </div>
     </div>
 
-    <!-- User Info Section -->
-    <div class="user-info" id="userInfo">
-        <span class="username" id="usernameDisplay">Anik</span>
-        <button class="logout-button" id="logoutButton">Logout</button>
+
+
+
+
+    <div id="notification" class="notification">
+        <span class="close-btn">&times;</span> <!-- Close button -->
+        <!-- Notification text will be set here -->
     </div>
+
+
 
 
 </body>
