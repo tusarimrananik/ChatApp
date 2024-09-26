@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const http = require('http').Server(express());
 const Message = require('./models/Message');
 const TempMessage = require('./models/TempMessage');
-
 const app = express();
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/chatAppDB')
     .then(() => console.log('Connected to MongoDB'))
@@ -23,20 +22,33 @@ app.use(cors({
     credentials: true
 }));
 
-const fetchRecentMessages = async (limit = 20) => {
-    try {
-        // Fetch regular messages
-        const regularMessages = await Message.find().sort({ timestamp: -1 }).limit(limit);
 
-        // Fetch temporary messages with expiration time
-        const tempMessages = await TempMessage.find({ expirationTime: { $gte: new Date() } }) // Only fetch unexpired messages
+const fetchMessages = async (timestamp = null, limit = 20) => {
+    try {
+        // Define query conditions
+        const messageQuery = timestamp ? { timestamp: { $lt: timestamp } } : {}; // If timestamp is provided, fetch earlier messages, otherwise fetch the most recent ones.
+        const tempMessageQuery = {
+            ...messageQuery,
+            expirationTime: { $gt: new Date() }, // Only include temporary messages that haven't expired
+        };
+
+        // Fetch regular (permanent) messages
+        const regularMessages = await Message.find(messageQuery)
             .sort({ timestamp: -1 })
             .limit(limit);
 
-        // Merge and sort by timestamp (most recent first)
-        const allMessages = [...regularMessages, ...tempMessages].sort((a, b) => b.timestamp - a.timestamp);
+        // Fetch temporary (expiring) messages
+        const tempMessages = await TempMessage.find(tempMessageQuery)
+            .sort({ timestamp: -1 })
+            .limit(limit);
 
-        // Optionally, limit the total number of messages after merging
+        // Merge both message arrays
+        let allMessages = [...regularMessages, ...tempMessages];
+
+        // Sort by timestamp in descending order after merging
+        allMessages = allMessages.sort((a, b) => b.timestamp - a.timestamp);
+
+        // Optionally limit the total number of messages after merging
         return allMessages.slice(0, limit);
     } catch (error) {
         console.error("Error fetching messages:", error);
@@ -44,52 +56,92 @@ const fetchRecentMessages = async (limit = 20) => {
     }
 };
 
-const fetchEarlierMessages = async (timestamp, limit = 20) => {
-    return await Message.find({ timestamp: { $lt: timestamp } })
-        .sort({ timestamp: -1 })
-        .limit(limit);
-};
+
+
 
 io.on('connection', (socket) => {
-    fetchRecentMessages().then(messages => {
-        socket.emit('loadMessages', messages.reverse());
 
-        console.log('new socket connection!', messages.reverse())
+
+    //When a user connects of reload the page imediatly fetch the messages.
+    fetchMessages().then(messages => {
+        socket.emit('displayRecentMessages', messages.reverse());
     });
 
-    socket.on('loadEarlierMessages', (timestamp) => {
-        fetchEarlierMessages(timestamp).then(messages => {
-            socket.emit('displayEarlierMessages', messages.reverse());
-        });
+
+    // Event listener for loading earlier messages
+    socket.on('loadOlderMessage', async (olderMessagTimestamp) => {
+        try {
+            // console.log(`Loading messages earlier than timestamp: ${olderMessagTimestamp}`);
+
+            // Call fetchMessages with the olderMessagTimestamp
+            const olderMessages = await fetchMessages(olderMessagTimestamp);
+
+            // Send the messages back to the client
+            socket.emit('displayOlderMessages', olderMessages);
+        } catch (error) {
+            console.error("Error loading earlier messages:", error);
+            socket.emit('error', { message: "Error loading earlier messages." });
+        }
     });
+
+    // Other event listeners can go here...
+
+
 
     socket.on('new-user-joined', async (name) => {
         socket.broadcast.emit('user-joined', name);
     });
 
+
+
     socket.on('send', async (message) => {
-        socket.broadcast.emit('receive', { message: message.message, name: message.savedUsername });
         try {
             const newMessage = new Message({
                 username: message.savedUsername,
                 message: message.message
             });
-            await newMessage.save();
-            console.log('Message stored:', newMessage);
+
+            await newMessage.save(); // This will include the timestamp automatically
+            // console.log('Message stored:', newMessage);
+
+            // Broadcast the stored message to all other clients
+            io.emit('receive', {
+
+                id: newMessage._id,      // Using the new message ID
+                username: newMessage.username, // Original username
+                message: newMessage.message,    // Original message
+                timestamp: newMessage.timestamp  // Timestamp from the new message
+                // You can add expirationTime if needed, else remove it
+            });
         } catch (error) {
             console.error('Error storing message:', error.message);
         }
     });
 
+
+
+
+
+
+
+
+
+
     socket.on('temp-message', async (data) => {
+
+
+
         const { username, message, timer } = data;
-        console.log("Username:", username, "Message:", message);
         const expirationTime = new Date(Date.now() + timer); // Set expiration time to 30 seconds later
         const newMessage = new TempMessage({
             username: username,
             message: message,
             expirationTime: expirationTime
         });
+
+
+        console.log(data);
+
         try {
             const savedMessage = await newMessage.save(); // Save message using async/await
             // Emit the message to all clients
@@ -108,18 +160,27 @@ io.on('connection', (socket) => {
         }
     });
 
+
+
+
+
 });
 
 
-// setInterval(async () => {
-//     try {
-//         const now = new Date();
-//         await TempMessage.deleteMany({ expirationTime: { $lte: now } }); // Delete expired messages
-//         console.log("Expired messages cleaned up");
-//     } catch (err) {
-//         console.error("Error cleaning up expired messages:", err);
-//     }
-// }, 60000); // Run every minute
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 http.listen(8000, () => {
     console.log('Server is running on port 8000');
