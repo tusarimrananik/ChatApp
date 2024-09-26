@@ -24,9 +24,46 @@ app.use(cors({
 }));
 
 
+
+
+
 const fetchRecentMessages = async (limit = 20) => {
-    return await Message.find().sort({ timestamp: -1 }).limit(limit);
+    try {
+        // Fetch regular messages
+        const regularMessages = await Message.find().sort({ timestamp: -1 }).limit(limit);
+
+        // Fetch temporary messages with expiration time
+        const tempMessages = await TempMessage.find({ expirationTime: { $gte: new Date() } }) // Only fetch unexpired messages
+            .sort({ timestamp: -1 })
+            .limit(limit);
+
+        // Merge and sort by timestamp (most recent first)
+        const allMessages = [...regularMessages, ...tempMessages].sort((a, b) => b.timestamp - a.timestamp);
+
+        // Optionally, limit the total number of messages after merging
+        return allMessages.slice(0, limit);
+    } catch (error) {
+        console.error("Error fetching messages:", error);
+        return [];
+    }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const fetchRecentMessages = async (limit = 20) => {
+//     return await Message.find().sort({ timestamp: -1 }).limit(limit);
+// };
 
 
 
