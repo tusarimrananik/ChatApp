@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const http = require('http').Server(express());
-const User = require('./models/User');
 const Message = require('./models/Message');
 const app = express();
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/chatAppDB')
@@ -65,15 +64,6 @@ io.on('connection', (socket) => {
 
 
     socket.on('new-user-joined', async (name) => {
-        console.log('New user:', name);
-        try {
-            const newUser = new User({ name });
-            await newUser.save();
-            console.log('User saved:', newUser);
-
-        } catch (error) {
-            console.error('Error saving user:', error.message);
-        }
 
         socket.broadcast.emit('user-joined', name);
     });

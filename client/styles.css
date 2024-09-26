@@ -175,3 +175,43 @@ button:hover {
     border: 1px solid #dc3d3d;
     /* Slightly darker red border */
 }
+
+
+
+
+/* User information styles */
+.user-info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background-color: #3c4043;
+    /* Match modal background color */
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.username {
+    margin-right: 10px;
+    cursor: pointer;
+    color: #7289DA;
+    /* Discord blue for username */
+}
+
+.logout-button {
+    display: none;
+    /* Hide the logout button initially */
+    background-color: #f04747;
+    /* Discord red for logout button */
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #dc3d3d;
+    /* Darker red on hover */
+}

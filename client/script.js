@@ -6,19 +6,23 @@ const messagesContainer = document.getElementById('messages');
 const wrapper = document.querySelector('.chat');
 let savedUsername = localStorage.getItem("username");
 
+const modal = document.getElementById("nameModal");
+const joinBtn = document.getElementById("joinBtn");
+const usernameInput = document.getElementById("username");
+const errorMessage = document.getElementById("error-message");
+const usernameDisplay = document.getElementById("usernameDisplay");
+const userInfo = document.getElementById("userInfo");
+const logoutButton = document.getElementById("logoutButton");
 
 
 
 
 window.onload = function () {
-    const modal = document.getElementById("nameModal");
-    const joinBtn = document.getElementById("joinBtn");
-    const usernameInput = document.getElementById("username");
-    const errorMessage = document.getElementById("error-message");
 
-    // Check if username is already in local storage
     if (savedUsername) {
         console.log(`Welcome back, ${savedUsername}!`); // Welcome back if username exists
+        usernameDisplay.innerText = savedUsername; // Display the saved username
+        userInfo.style.display = 'flex'; // Show the user info section
     } else {
         modal.style.display = "block"; // Show the modal when the page loads
     }
@@ -27,14 +31,35 @@ window.onload = function () {
         const username = usernameInput.value.trim();
         if (username) {
             localStorage.setItem("username", username); // Save username to local storage
-            modal.style.display = "none"; // Close the modal
-            // You can also add logic here to proceed to the chat room
 
             savedUsername = localStorage.getItem("username");
+            modal.style.display = "none"; // Close the modal
+            usernameDisplay.innerText = username; // Display the username
+            userInfo.style.display = 'flex'; // Show the user info section
+
+            // Emit the new user joined event
+            socket.emit('new-user-joined', username);
         } else {
             errorMessage.textContent = "Please enter your username."; // Set the error message
             errorMessage.style.display = "block"; // Show the error message
         }
+    }
+
+    // Show/hide logout button on username click
+    usernameDisplay.onclick = function () {
+        const isDisplayed = logoutButton.style.display === 'block';
+        logoutButton.style.display = isDisplayed ? 'none' : 'block';
+    }
+
+    logoutButton.onclick = function () {
+        localStorage.removeItem("username"); // Remove username from local storage
+        // userInfo.style.display = 'none'; // Hide the user info section
+        // usernameInput.value = ''; // Clear username input
+        // modal.style.display = 'block'; // Show the modal again
+        // logoutButton.style.display = 'none'; // Hide the logout button after logout
+
+
+        window.location.reload();
     }
 
     // Optional: close modal if clicked outside (you can remove this if not needed)
@@ -44,14 +69,6 @@ window.onload = function () {
         }
     }
 }
-
-
-
-// if (!savedUsername) {
-//     socket.emit('new-user-joined', savedUsername);
-// }
-
-
 
 
 
@@ -150,23 +167,46 @@ socket.on('displayEarlierMessages', (messages) => {
     }
     loading = false;
 });
-socket.on('user-joined', data => {
-    messagesContainer.innerHTML = `${data} Joined the chat!`
+
+socket.on('user-joined', user => {
+    console.log(`${user} Joined the chat!`)
 })
+
+
+
 messageInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         sendButton.click();
     }
 });
 sendButton.addEventListener('click', () => {
+
     let message = messageInput.value;
+    if (message === "") return;
+
+
     socket.emit('send', { message, savedUsername });
+
     const messageElement = document.createElement('p');
     messageElement.textContent = `${savedUsername}: ${message}`;
     messagesContainer.appendChild(messageElement);
     messageInput.value = "";
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
 socket.on('receive', data => {
     const messageElement = document.createElement('p');
     messageElement.textContent = `${data.name}: ${data.message}`;
