@@ -76,14 +76,6 @@ window.onload = function () {
 
 
 
-
-
-
-
-
-
-
-
 console.log(`${savedUsername} Joined the chat!`)
 
 
@@ -110,20 +102,6 @@ function displayEarlierMessage(messages) {
         messagesContainer.insertBefore(messageElement, firstChild);
     })
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -179,22 +157,147 @@ messageInput.addEventListener('keydown', (event) => {
         sendButton.click();
     }
 });
+
+
+
+
+
+
+
+
+socket.on('temp-message-received', (data) => {
+    const { id, username, message, expirationTime } = data;
+
+
+    console.log(id, username, message, expirationTime)
+    // Create a message element
+    const messageElement = document.createElement('div');
+    messageElement.id = id;
+    messageElement.classList.add('message');
+    messageElement.innerHTML = `<strong>${username}:</strong> ${message} <span class="countdown" id="countdown-${id}"></span>`;
+
+    document.getElementById('messages').appendChild(messageElement);
+
+    // Calculate remaining time in seconds
+    const remainingTime = Math.floor((new Date(expirationTime) - Date.now()) / 1000);
+
+    // Update the countdown timer every second
+    let timeLeft = remainingTime;
+
+    const countdownElement = document.getElementById(`countdown-${id}`);
+    countdownElement.textContent = ` (${timeLeft}s)`; // Initial timer display
+
+    const countdownInterval = setInterval(() => {
+        timeLeft--;
+        countdownElement.textContent = ` (${timeLeft}s)`;
+
+        // If time is up, remove the message and clear the interval
+        if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+            messageElement.remove();
+        }
+    }, 1000); // Update every second
+});
+
+
+socket.on('temp-message-deleted', (messageId) => {
+    const messageElement = document.getElementById(messageId);
+    if (messageElement) {
+        messageElement.remove();
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let disappearingMessage = true;
+let timer = 10000;
+let userN = "Test"
+
+
 sendButton.addEventListener('click', () => {
 
     let message = messageInput.value;
     if (message === "") return;
 
 
-    socket.emit('send', { message, savedUsername });
+    if (disappearingMessage) {
+        socket.emit('temp-message', { username: savedUsername, message, timer });
 
-    const messageElement = document.createElement('p');
-    messageElement.textContent = `${savedUsername}: ${message}`;
-    messagesContainer.appendChild(messageElement);
-    messageInput.value = "";
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+
+        messageInput.value = "";
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+
+    } else {
+
+        socket.emit('send', { message, savedUsername });
+
+        const messageElement = document.createElement('p');
+        messageElement.textContent = `${savedUsername}: ${message}`;
+        messagesContainer.appendChild(messageElement);
+        messageInput.value = "";
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    }
+
 
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
