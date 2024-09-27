@@ -59,14 +59,76 @@ const fetchMessages = async (timestamp = null, limit = 20) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 io.on('connection', (socket) => {
 
 
-    //When a user connects of reload the page imediatly fetch the messages.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     fetchMessages().then(messages => {
         socket.emit('displayRecentMessages', messages.reverse());
     });
 
+    socket.on('new-user-joined', async (name) => {
+        socket.broadcast.emit('user-joined', name);
+    });
 
     // Event listener for loading earlier messages
     socket.on('loadOlderMessage', async (olderMessagTimestamp) => {
@@ -77,27 +139,17 @@ io.on('connection', (socket) => {
             const olderMessages = await fetchMessages(olderMessagTimestamp);
 
             // Send the messages back to the client
-            socket.emit('displayOlderMessages', olderMessages);
+            socket.emit('displayOlderMessages', olderMessages.reverse());
         } catch (error) {
             console.error("Error loading earlier messages:", error);
             socket.emit('error', { message: "Error loading earlier messages." });
         }
     });
 
-    // Other event listeners can go here...
-
-
-
-    socket.on('new-user-joined', async (name) => {
-        socket.broadcast.emit('user-joined', name);
-    });
-
-
-
     socket.on('send', async (message) => {
         try {
             const newMessage = new Message({
-                username: message.savedUsername,
+                username: message.savedName,
                 message: message.message
             });
 
@@ -119,28 +171,16 @@ io.on('connection', (socket) => {
     });
 
 
-
-
-
-
-
-
-
-
     socket.on('temp-message', async (data) => {
-
-
-
-        const { username, message, timer } = data;
-        const expirationTime = new Date(Date.now() + timer); // Set expiration time to 30 seconds later
+        const { username, message, ghostTimer } = data;
+        const expirationTime = new Date(Date.now() + parseInt(ghostTimer) * 1000); // Set expiration time to 30 seconds later
         const newMessage = new TempMessage({
             username: username,
             message: message,
             expirationTime: expirationTime
         });
-
-
         console.log(data);
+        console.log(ghostTimer);
 
         try {
             const savedMessage = await newMessage.save(); // Save message using async/await
@@ -154,7 +194,7 @@ io.on('connection', (socket) => {
                 } catch (err) {
                     console.error("Error deleting message:", err);
                 }
-            }, timer);
+            }, ghostTimer * 1000);
         } catch (err) {
             console.error("Error storing message:", err);
         }
@@ -164,24 +204,46 @@ io.on('connection', (socket) => {
 
 
 
+
+
+
+
+    // Listen for typing event
+    socket.on('typing', (savedName) => {
+        socket.broadcast.emit('userTyping', savedName); // Change to username if available
+    });
+
+    // Listen for stopTyping event
+    socket.on('stopTyping', (savedName) => {
+        socket.broadcast.emit('userStoppedTyping', savedName); // Change to username if available
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 http.listen(8000, () => {
     console.log('Server is running on port 8000');
 });
+
+
+
+
+
+
+
+

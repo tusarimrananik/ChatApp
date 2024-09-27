@@ -2,9 +2,13 @@
 <html lang="en">
 
 <head>
+
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord-like Chat Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&display=swap" rel="stylesheet">
     <!-- Socket.IO client-side library -->
     <script src="http://localhost:8000/socket.io/socket.io.js"></script>
     <!-- Your custom JS -->
@@ -14,8 +18,6 @@
 </head>
 
 <body>
-
-
 
     <div class="container">
 
@@ -31,23 +33,40 @@
             </div>
 
 
-            <div class="user-info" id="userInfo">
-                <span class="username" id="usernameDisplay"></span>
-                <input type="number" id="timer">
 
-                <label class="switch">
-                    <input type="checkbox" id="themeToggle">
-                    <span class="slider"></span>
-                  </label>
+            <div class="user-profile">
+                <div class="avatar">
+                    <img src="https://img.freepik.com/premium-vector/vector-flat-illustration-grayscale-avatar-user-profile-person-icon-profile-picture-business-profile-woman-suitable-social-media-profiles-icons-screensavers-as-templatex9_719432-1351.jpg"
+                        alt="User Avatar">
+                    <div class="status online">Online...</div>
+                </div>
 
-                <button class="logout-button" id="logoutButton">Logout</button>
+                <div class="user-info">
+                    <div class="username" id="username">tusarimrananik</div>
+                    <div class="actions">
+                        <div class="icon-settings" id="openPopup">⚙️</div>
+                        <div class="icon-ghost" id="ghostMode">👻</div>
+                        <div class="icon-settings" id="sessionClear">❌</div>
+                    </div>
+                </div>
+
             </div>
+
+
 
         </div>
 
 
+
+
         <div class="chat">
+            <div id="loadingOverlay" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>Fetching older messages...</p>
+            </div>
             <div class="messages" id="messages"></div>
+            <div id="typing-message"></div>
+
             <div class="input-area">
                 <input type="text" id="messageInput" placeholder="Type your message...">
                 <button id="sendButton">Send</button>
@@ -57,37 +76,45 @@
 
 
 
+    <div id="notification" class="notification">
+        <span class="close-btn">&times;</span> <!-- Close button -->
+        <!-- Notification text will be set here -->
+    </div>
 
 
 
+    <div class="overlay" id="overlay">
+        <div class="popup">
+            <h2 class="popup-title">Ghost Mode Time</h2>
+
+            <div class="level-timer-flex">
+
+                <label class="popup-label" for="ghostModeTime">Enter time in seconds:</label>
+                <input type="number" class="popup-input" id="ghostModeTime" placeholder="Enter time..." min="1" />
+            </div>
 
 
 
-
-
-
-
-
-
-
-    <div id="nameModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">Welcome to the Chat Room</div>
-            <p class="modal-description">Please enter your username to join:</p>
-            <input type="text" id="username" class="username-input" placeholder="Your Username" />
-            <div id="error-message" class="error-message"></div> <!-- Error message placeholder -->
-            <button id="joinBtn" class="join-button">Join</button>
+            <div class="button-group">
+                <button id="submitBtn" class="popup-button">Submit</button>
+                <button id="closeBtn" class="popup-button">Cancel</button>
+            </div>
         </div>
     </div>
 
 
 
 
-
-    <div id="notification" class="notification">
-        <span class="close-btn">&times;</span> <!-- Close button -->
-        <!-- Notification text will be set here -->
+    <!-- Modal for entering name -->
+    <div id="nameModal">
+        <div class="modal-content">
+            <h2>Enter your name to join the chat room</h2>
+            <input type="text" id="nameInput" placeholder="Your Name">
+            <button id="submitName">Join Chat</button>
+            <div class="error" id="error">Name cannot be empty</div>
+        </div>
     </div>
+
 
 
 
