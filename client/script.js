@@ -40,8 +40,6 @@ nameInput.addEventListener('keydown', (event) => {
 });
 
 
-
-
 // Event listener for the "Join Chat" button
 document.getElementById('submitName').addEventListener('click', () => {
     const nameValue = nameInput.value.trim();
@@ -59,17 +57,9 @@ document.getElementById('submitName').addEventListener('click', () => {
 
 
 
-
-
-
-
-
 let typingTimeout; // To hold the timeout for stopping typing
 let isTyping = false; // To keep track of whether the user is currently typing
 let typingUsers = new Set(); // Use a Set to track unique users typing
-
-
-
 
 // Emit a typing event when the user types
 messageInput.addEventListener('input', () => {
@@ -92,13 +82,11 @@ messageInput.addEventListener('input', () => {
 
 
 
-
 // Listen for typing event from server
 socket.on('userTyping', (savedName) => {
 
     typingUsers.add(savedName); // Add user to the set of typing users
     updateTypingIndicator(); // Update the typing indicator message
-
 
 
 });
@@ -161,9 +149,6 @@ function updateTypingIndicator() {
         typingMessageContainer.innerHTML = ''; // Clear previous content
     }
 }
-
-
-
 
 
 
@@ -272,10 +257,8 @@ function loadOlderRecentMessage(messages, callback) {
         });
     } else {
     }
-
     loading = false; // Set the loading flag to false after loading
     hideLoadingOverlay(); // Hide loading overlay
-
     messagesContainer.scrollTop = 200; // Adjust this value as needed
     if (callback) {
         callback();
@@ -289,13 +272,9 @@ function scrollToBottom(container) {
 }
 
 
-
 socket.on('user-joined', user => {
     showNotification(`${user} joined the chat!`)
 })
-
-
-
 
 
 socket.on('displayRecentMessages', (messages) => {
@@ -325,8 +304,6 @@ socket.on('temp-message-deleted', (messageId) => {
         messageElement.remove();
     }
 });
-
-
 
 
 // Detect attempts to scroll (mouse wheel or touchpad)
@@ -360,10 +337,6 @@ messagesContainer.addEventListener('touchmove', function (event) {
 });
 
 
-
-
-
-
 // Show the loading overlay
 function showLoadingOverlay() {
     const loadingOverlay = document.getElementById('loadingOverlay');
@@ -375,48 +348,6 @@ function hideLoadingOverlay() {
     const loadingOverlay = document.getElementById('loadingOverlay');
     loadingOverlay.style.display = 'none';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -449,23 +380,6 @@ messageInput.addEventListener('keydown', (event) => {
         sendButton.click();
     }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 function showNotification(info, duration = 3000) {
@@ -513,57 +427,6 @@ function adjustNotificationPositions() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //Dom manupulation
 
 document.getElementById('openPopup').addEventListener('click', function () {
@@ -573,8 +436,6 @@ document.getElementById('openPopup').addEventListener('click', function () {
 document.getElementById('closeBtn').addEventListener('click', function () {
     document.getElementById('overlay').style.display = 'none'; // Hide the popup
 });
-
-
 
 
 // document.getElementById('submitBtn').addEventListener('click', function () {
@@ -642,12 +503,6 @@ document.getElementById('closeBtn').addEventListener('click', function () {
 // });
 
 
-
-
-
-
-
-
 document.getElementById('submitBtn').addEventListener('click', function () {
     handleTimeSubmission();
 });
@@ -685,31 +540,6 @@ function handleTimeSubmission() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // document.getElementById('ghostModeTime').addEventListener('keydown', (event) => {
 //     if (event.key === 'Enter' && document.activeElement === nameInput) {
 //         document.getElementById('submitName').click();
@@ -717,11 +547,6 @@ function handleTimeSubmission() {
 
 //     }
 // });
-
-
-
-
-
 
 // document.getElementById('ghostModeTime').addEventListener('change', function () {
 //     const time = document.getElementById('ghostModeTime').value;
@@ -736,37 +561,6 @@ function handleTimeSubmission() {
 //     // Hide the popup after submission
 //     document.getElementById('overlay').style.display = 'none';
 // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Optional: Load the value from localStorage when the page loads
 window.onload = function () {
@@ -820,6 +614,3 @@ document.getElementById('sessionClear').addEventListener('click', () => {
     // Reload the page
     location.reload();
 });
-
-
-

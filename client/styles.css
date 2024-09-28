@@ -40,26 +40,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
@@ -379,23 +359,6 @@ button:hover {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     .container {
@@ -541,13 +504,6 @@ input[type="text"]:focus {
 }
 
 /* Responsive Adjustments */
-
-
-
-
-
-
-
 
 
 
@@ -772,11 +728,6 @@ input[type="text"]:focus {
 /* Responsive design */
 
 
-
-
-
-
-
 #nameModal {
     display: none;
     /* Hidden by default */
@@ -849,19 +800,6 @@ input[type="text"]:focus {
     font-weight: 700;
     /* Bold for emphasis */
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -988,10 +926,6 @@ input[type="text"]:focus {
 }
 
 
-
-
-
-
 /* General chat container */
 #messages {
     background-color: #23272a;
@@ -1076,10 +1010,6 @@ input[type="text"]:focus {
     text-align: center;
     max-width: fit-content;
 }
-
-
-
-
 
 
 /* User Profile Section */
@@ -1242,24 +1172,9 @@ input[type="text"]:focus {
 
 
 
-
-
-
 #typing-message {
     background-color: #40444b;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 .countdown {
     font-size: 0.7rem; /* Keeping the original font size */

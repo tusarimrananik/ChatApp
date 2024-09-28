@@ -2,11 +2,9 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat App Created by Anik</title>
-
     <!-- Socket.IO client-side library -->
     <script src="http://localhost:8000/socket.io/socket.io.js"></script>
     <!-- Your custom JS -->
@@ -26,47 +24,21 @@
                     <li># highlights</li>
                 </ul>
             </div>
-
             <div class="user-profile">
-
                 <div class="user-info">
-
                     <div class="username" id="username">Anik</div>
                     <div class="actions">
                         <div class="icon-settings" id="openPopup">
-
-
                             <img src="img/setting.png" alt="SVG Example" style="width: 25px; height: 25px;">
-
-
-
-
                         </div>
-
-
                         <div class="icon-ghost" id="ghostMode">
-
-
                             <img src="img/alarm.png" alt="SVG Example" style="width: 25px; height: 25px;">
-
-
-
-
                         </div>
-
-
-
-
                         <div class="icon-settings" id="sessionClear">
                             <img src="img/logout.png" alt="SVG Example" style="width: 25px; height: 25px;">
-
                         </div>
                     </div>
-
                 </div>
-
-
-
             </div>
         </div>
         <div class="chat">
@@ -83,39 +55,24 @@
             </div>
         </div>
     </div>
-
-
-
     <div id="notification" class="notification">
         <span class="close-btn">&times;</span> <!-- Close button -->
         <!-- Notification text will be set here -->
     </div>
-
-
-
     <div class="overlay" id="overlay">
         <div class="popup">
             <h2 class="popup-title">Disappearing Message Time</h2>
-
             <div class="level-timer-flex">
-
                 <label class="popup-label" for="ghostModeTime">Enter time in seconds:</label>
                 <input type="number" autocomplete="off" class="popup-input" id="ghostModeTime" placeholder="10"
                     min="1" />
             </div>
-
-
-
             <div class="button-group">
                 <button id="submitBtn" class="popup-button">Submit</button>
                 <button id="closeBtn" class="popup-button">Cancel</button>
             </div>
         </div>
     </div>
-
-
-
-
     <!-- Modal for entering name -->
     <div id="nameModal">
         <div class="modal-content">
@@ -125,11 +82,6 @@
             <div class="error" id="error">Name cannot be empty</div>
         </div>
     </div>
-
-
-
-
-
 </body>
 
 </html>

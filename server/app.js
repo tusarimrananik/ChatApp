@@ -22,7 +22,6 @@ app.use(cors({
     credentials: true
 }));
 
-
 const fetchMessages = async (timestamp = null, limit = 20) => {
     try {
         // Define query conditions
@@ -57,15 +56,7 @@ const fetchMessages = async (timestamp = null, limit = 20) => {
 };
 
 
-
-
-
-
-
-
-
 io.on('connection', (socket) => {
-
 
     fetchMessages().then(messages => {
         socket.emit('displayRecentMessages', messages.reverse());
@@ -144,12 +135,6 @@ io.on('connection', (socket) => {
 
 
 
-
-
-
-
-
-
     // Listen for typing event
     socket.on('typing', (savedName) => {
         socket.broadcast.emit('userTyping', savedName); // Change to username if available
@@ -160,32 +145,8 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('userStoppedTyping', savedName); // Change to username if available
     });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 });
 
 http.listen(8000, () => {
     console.log('Server is running on port 8000');
 });
-
-
-
-
-
-
-
-
