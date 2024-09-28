@@ -15,7 +15,7 @@ const usernameElement = document.getElementById('username');
 const modal = document.getElementById('nameModal');
 const nameInput = document.getElementById('nameInput');
 const error = document.getElementById('error');
-let ghostTimer = 10000; // Declare the ghostTimer variable
+let ghostTimer = 10; // Declare the ghostTimer variable
 let loading = false;
 let olderMessagTimestamp;
 let notificationQueue = []; // Queue to hold notifications
@@ -31,6 +31,17 @@ if (savedName) {
     // Show the modal if name is not present
     modal.style.display = 'block';
 }
+
+
+nameInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && document.activeElement === nameInput) {
+        document.getElementById('submitName').click();
+    }
+});
+
+
+
+
 // Event listener for the "Join Chat" button
 document.getElementById('submitName').addEventListener('click', () => {
     const nameValue = nameInput.value.trim();
@@ -64,7 +75,6 @@ let typingUsers = new Set(); // Use a Set to track unique users typing
 messageInput.addEventListener('input', () => {
     // Emit the typing event only if the user was not already typing
 
-    console.log("typing typinng...")
     if (!isTyping) {
         socket.emit('typing', savedName);
         isTyping = true; // Set typing status to true
@@ -88,8 +98,7 @@ socket.on('userTyping', (savedName) => {
 
     typingUsers.add(savedName); // Add user to the set of typing users
     updateTypingIndicator(); // Update the typing indicator message
-    console.log('user tying..', savedName)
-    console.log(typingUsers)
+
 
 
 });
@@ -98,8 +107,7 @@ socket.on('userTyping', (savedName) => {
 socket.on('userStoppedTyping', (savedName) => {
     typingUsers.delete(savedName); // Remove user from the set of typing users
     updateTypingIndicator(); // Update the typing indicator message
-    console.log('userStopped tying', savedName)
-    console.log(typingUsers)
+
 
 });
 
@@ -215,7 +223,7 @@ function sendMessage(messages) {
     });
 }
 
-function loadOlderRecentMessage(messages) {
+function loadOlderRecentMessage(messages, callback) {
     const messagesContainer = document.getElementById('messages'); // Access the messages container
 
     if (messages.length > 0) {
@@ -247,12 +255,12 @@ function loadOlderRecentMessage(messages) {
                 let timeLeft = remainingTime;
 
                 const countdownElement = document.getElementById(`countdown-${id}`);
-                countdownElement.textContent = ` (${timeLeft}s)`; // Initial timer display
+                countdownElement.textContent = `${timeLeft}s`; // Initial timer display
 
                 // Update the countdown timer every second
                 const countdownInterval = setInterval(() => {
                     timeLeft--;
-                    countdownElement.textContent = ` (${timeLeft}s)`;
+                    countdownElement.textContent = ` ${timeLeft}s`;
 
                     // If time is up, remove the message and clear the interval
                     if (timeLeft <= 0) {
@@ -263,13 +271,15 @@ function loadOlderRecentMessage(messages) {
             }
         });
     } else {
-        console.log("No more earlier messages to load.");
     }
 
     loading = false; // Set the loading flag to false after loading
-    // hideLoadingOverlay(); // Hide loading overlay
+    hideLoadingOverlay(); // Hide loading overlay
 
     messagesContainer.scrollTop = 200; // Adjust this value as needed
+    if (callback) {
+        callback();
+    }
 
 }
 
@@ -279,17 +289,23 @@ function scrollToBottom(container) {
 }
 
 
-//All socket listener
+
 socket.on('user-joined', user => {
-    showNotification(`${user} Joined the chat!`, 3000)
-    //broadcast notification!
+    showNotification(`${user} joined the chat!`)
 })
+
+
+
+
 
 socket.on('displayRecentMessages', (messages) => {
     if (messages.length > 0) {
         olderMessagTimestamp = messages[0].timestamp;
     }
-    loadOlderRecentMessage(messages)
+    loadOlderRecentMessage(messages, () => {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    })
 });
 
 socket.on('displayOlderMessages', (messages) => {
@@ -297,7 +313,7 @@ socket.on('displayOlderMessages', (messages) => {
         olderMessagTimestamp = messages[0].timestamp;
         loadOlderRecentMessage(messages);
     } else {
-        console.log("No more earlier messages to load.");
+        hideLoadingOverlay(); // Hide loading overlay
     }
 });
 
@@ -317,10 +333,9 @@ socket.on('temp-message-deleted', (messageId) => {
 messagesContainer.addEventListener('wheel', function (event) {
     // Check if the user is trying to scroll up
     if (event.deltaY < 0 && messagesContainer.scrollTop <= 70 && !loading) {
-        console.log("User is trying to scroll up at the top.");
-        console.log("Fetching earlier messages...");
+
         loading = true; // Prevent multiple requests
-        // showLoadingOverlay(); // Show loading overlay
+        showLoadingOverlay(); // Show loading overlay
         socket.emit('loadOlderMessage', olderMessagTimestamp);
 
     }
@@ -336,8 +351,7 @@ messagesContainer.addEventListener('touchmove', function (event) {
 
         // If the user is trying to scroll up (Y coordinate is decreasing)
         if (touchMovement < messagesContainer.clientHeight / 2) {
-            console.log("User is trying to scroll up at the top (touch).");
-            console.log("Fetching earlier messages...");
+
             loading = true; // Prevent multiple requests
             // showLoadingOverlay(); // Show loading overlay
             socket.emit('loadOlderMessage', olderMessagTimestamp);
@@ -421,12 +435,10 @@ sendButton.addEventListener('click', () => {
         socket.emit('temp-message', { username: savedName, message, ghostTimer });
         messageInput.value = "";
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        console.log(ghostMode)
     } else {
         socket.emit('send', { message, savedName });
         messageInput.value = "";
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        console.log(ghostMode)
 
     }
 });
@@ -453,24 +465,25 @@ messageInput.addEventListener('keydown', (event) => {
 
 
 
-//DOM MANUPULATION===============================
 
-//SHOW NOTIFICAITON 
+
 
 function showNotification(info, duration = 3000) {
     const notification = document.createElement('div'); // Create a new notification element
     notification.classList.add('notification'); // Add notification class
     notification.innerText = info; // Set the notification text
-    // Calculate the top position based on the current count of notifications
-    const verticalOffset = 10 + (notificationCount * 30); // 70px for each notification's height + margin
-    notification.style.top = `${verticalOffset}px`; // Apply the top offset
+
+    // Calculate the bottom position based on the current count of notifications
+    const verticalOffset = 100 + (notificationCount * 50); // 70px for each notification's height + margin
+    notification.style.bottom = `${verticalOffset}px`; // Apply the bottom offset
     document.body.appendChild(notification); // Append it to the body
     notificationCount++; // Increment the count of notifications
-    // Show the notification with a slight delay for stacking effect
+
+    // Trigger the slide-in effect
     setTimeout(() => {
-        notification.classList.add('show'); // Show the notification
-        notification.style.display = 'block'; // Ensure it's set to block when showing
+        notification.classList.add('show'); // Show the notification (slide in from right)
     }, 0); // Trigger the display in the next event loop
+
     // Automatically hide after the specified duration
     setTimeout(() => {
         slideOut(notification); // Call slide out function
@@ -478,8 +491,9 @@ function showNotification(info, duration = 3000) {
 }
 
 function slideOut(notification) {
-    notification.style.animation = 'slideOut 0.5s forwards'; // Set the slide-out animation
-    notification.style.opacity = '0'; // Fade out the opacity
+    notification.classList.remove('show'); // Remove the show class to trigger slide-out
+    notification.classList.add('slide-out'); // Add the slide-out class for animation
+    notification.style.right = '-300px'; // Optionally set right to -300px for off-screen
 
     // Remove the notification after the animation completes
     setTimeout(() => {
@@ -493,13 +507,51 @@ function slideOut(notification) {
 function adjustNotificationPositions() {
     const notifications = document.querySelectorAll('.notification');
     notifications.forEach((notification, index) => {
-        const newOffset = 20 + (index * 30); // Recalculate top position for each remaining notification
-        notification.style.top = `${newOffset}px`;
+        const newOffset = 50 + (index * 70); // Recalculate bottom position for each remaining notification
+        notification.style.bottom = `${newOffset}px`;
     });
 }
 
 
-//SHOW NOTIFICAITON 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -522,34 +574,198 @@ document.getElementById('closeBtn').addEventListener('click', function () {
     document.getElementById('overlay').style.display = 'none'; // Hide the popup
 });
 
+
+
+
+// document.getElementById('submitBtn').addEventListener('click', function () {
+//     const time = document.getElementById('ghostModeTime').value;
+//     if (!time) {
+//         console.log("no time")
+//         showNotification(`No value set, applying default of 10 seconds`)
+//         document.getElementById('overlay').style.display = 'none'; // Hide the popup after submission
+//     } else {
+//         showNotification(`Disappears In: ${time} sec`)
+//         document.getElementById('overlay').style.display = 'none'; // Hide the popup after submission
+//         console.log("time")
+//     }
+// });
+
+
+
+// document.getElementById('submitBtn').addEventListener('click', function () {
+//     const timeInput = document.getElementById('ghostModeTime').value;
+//     let time = timeInput ? timeInput : 10; // Set default to 10 if no value provided
+
+//     if (!timeInput) {
+//         console.log("No time set, using default of 10 seconds");
+//         showNotification(`No value set, applying default of 10 seconds`);
+//     } else {
+//         console.log(`Time set to: ${time} seconds`);
+//         showNotification(`Disappears In: ${time} sec`);
+//     }
+
+//     document.getElementById('overlay').style.display = 'none'; // Hide the popup after submission
+// });
+
+
+// document.getElementById('ghostModeTime').addEventListener('keydown', (event) => {
+//     if (event.key === 'Enter') {
+//         // Trigger the change event to handle the submission logic
+//         const changeEvent = new Event('change');
+//         document.getElementById('ghostModeTime').dispatchEvent(changeEvent);
+//         document.getElementById('submitName').click();
+//         console.log('Ghost Mode Time submitted...');
+//     }
+// });
+
+
+// document.getElementById('ghostModeTime').addEventListener('change', function () {
+//     const timeInput = document.getElementById('ghostModeTime').value;
+//     let time;
+
+//     // Validate the input value
+//     if (timeInput && !isNaN(timeInput) && parseInt(timeInput) > 0) {
+//         time = parseInt(timeInput);
+//     } else {
+//         console.log("Invalid time input, using default of 10 seconds.");
+//         time = 10; // Default value
+//     }
+
+//     // Store the valid value in localStorage
+//     localStorage.setItem('ghostModeTime', time);
+
+//     // Update the ghostTimer variable
+//     ghostTimer = time;
+
+//     // Hide the popup after submission
+//     document.getElementById('overlay').style.display = 'none';
+// });
+
+
+
+
+
+
+
+
 document.getElementById('submitBtn').addEventListener('click', function () {
-    const time = document.getElementById('ghostModeTime').value;
-    showNotification(`Ghost Mode Time set to: ${time} seconds`, 3000)
-    document.getElementById('overlay').style.display = 'none'; // Hide the popup after submission
+    handleTimeSubmission();
 });
 
+document.getElementById('ghostModeTime').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        handleTimeSubmission();
+    }
+});
 
+function handleTimeSubmission() {
+    const timeInput = document.getElementById('ghostModeTime').value;
+    let time = timeInput ? parseInt(timeInput) : 10; // Default to 10 if no value provided
 
+    // Validate the input value
+    if (!timeInput || isNaN(time) || time < 1 || time > 10000) {
+        console.log("Invalid time input, using default of 10 seconds.");
+        time = 10; // Default value
+        showNotification(`No valid value set, applying default of 10 seconds`);
+    } else {
+        console.log(`Time set to: ${time} seconds`);
+        showNotification(`Disappears Timer Set To: ${time} sec`);
+    }
 
-
-
-
-
-
-
-document.getElementById('ghostModeTime').addEventListener('change', function () {
-    const time = document.getElementById('ghostModeTime').value;
-
-    // Store the value in localStorage
+    // Store the valid value in localStorage
     localStorage.setItem('ghostModeTime', time);
 
     // Update the ghostTimer variable
-    ghostTimer = parseInt(time);
-
+    ghostTimer = time;
 
     // Hide the popup after submission
     document.getElementById('overlay').style.display = 'none';
-});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// document.getElementById('ghostModeTime').addEventListener('keydown', (event) => {
+//     if (event.key === 'Enter' && document.activeElement === nameInput) {
+//         document.getElementById('submitName').click();
+//         console.log('working...')
+
+//     }
+// });
+
+
+
+
+
+
+// document.getElementById('ghostModeTime').addEventListener('change', function () {
+//     const time = document.getElementById('ghostModeTime').value;
+
+//     // Store the value in localStorage
+//     localStorage.setItem('ghostModeTime', time);
+
+//     // Update the ghostTimer variable
+//     ghostTimer = parseInt(time);
+
+
+//     // Hide the popup after submission
+//     document.getElementById('overlay').style.display = 'none';
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Optional: Load the value from localStorage when the page loads
@@ -575,7 +791,7 @@ window.onload = function () {
 
 // Function to update the ghost mode button text based on its state
 function updateGhostModeButtonText() {
-    document.getElementById('ghostMode').innerText = ghostMode ? '💀' : '👻';
+    document.getElementById('ghostMode').innerHTML = ghostMode ? `<img src="img/alarm.png" alt="SVG Example" style="width: 25px; height: 25px;">` : `<img src="img/alaram.png" alt="SVG Example" style="width: 25px; height: 25px;">`;
 }
 
 // Event listener for toggling ghost mode
@@ -587,7 +803,7 @@ document.getElementById('ghostMode').addEventListener('click', () => {
     localStorage.setItem('ghostMode', ghostMode);
 
     // Notify the user using an alert
-    showNotification(ghostMode ? 'Ghost Mode has been enabled 💀' : 'Ghost Mode has been disabled 👻');
+    showNotification(ghostMode ? 'Disappearing messages enabled!' : 'Disappearing messages disabled!');
 
     // Update the UI based on the new state
     updateGhostModeButtonText(); // Call function to update button text
@@ -606,51 +822,4 @@ document.getElementById('sessionClear').addEventListener('click', () => {
 });
 
 
-
-// const typingContainer = document.getElementById('typing-container');
-
-// function showTypingIndicator(user) {
-//     // Check if typing indicator already exists to prevent duplication
-//     let typingIndicator = document.getElementById('typingIndicator');
-//     if (!typingIndicator) {
-//         // Create the typing indicator if it doesn't exist
-//         typingIndicator = document.createElement('div');
-//         typingIndicator.id = 'typingIndicator';
-//         typingIndicator.classList.add('typing-bubble');
-
-//         // Create the user span
-//         const userSpan = document.createElement('span');
-//         userSpan.id = 'typingUser';
-//         userSpan.textContent = `${user} is typing a message`;
-
-//         // Create the typing dots container
-//         const typingDots = document.createElement('div');
-//         typingDots.classList.add('typing-dots');
-
-//         // Create the three dots for animation
-//         for (let i = 0; i < 3; i++) {
-//             const dot = document.createElement('span');
-//             typingDots.appendChild(dot);
-//         }
-
-//         // Append userSpan and typingDots to the typing indicator
-//         typingIndicator.appendChild(userSpan);
-//         typingIndicator.appendChild(typingDots);
-
-//         // Append the typing indicator to the messages container
-//         typingContainer.appendChild(typingIndicator);
-//     }
-
-//     typingIndicator.style.display = 'flex'; // Show the typing indicator
-
-//     // Scroll the messages container to the bottom to show the typing indicator
-//     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-// }
-
-// function hideTypingIndicator() {
-//     const typingIndicator = document.getElementById('typingIndicator');
-//     if (typingIndicator) {
-//         typingIndicator.style.display = 'none'; // Hide the typing indicator
-//     }
-// }
 

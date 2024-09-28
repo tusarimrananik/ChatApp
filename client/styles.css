@@ -1,4 +1,65 @@
 /* General Styling */
+
+@font-face {
+    font-family: 'GG Sans';
+    src: url('fonts/gg sans Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'GG Sans';
+    src: url('fonts/gg sans Medium.ttf') format('truetype');
+    font-weight: 500;
+    /* Medium weight */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'GG Sans';
+    src: url('fonts/gg sans Semibold.ttf') format('truetype');
+    font-weight: 600;
+    /* Semibold weight */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'GG Sans';
+    src: url('fonts/gg sans Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+
+* {
+    font-family: 'GG Sans', sans-serif;
+    font-weight: 500;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
@@ -36,28 +97,31 @@ body {
     background-color: #202225;
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 12px;
     justify-content: space-between;
     transition: width 0.3s ease;
 }
 
 .sidebar h2 {
     color: #7289da;
-    font-size: 18px;
-    margin-bottom: 15px;
+    font-size: 23px;
+    margin: 30px 0px 5px 30px;
+    font-weight: bolder;
 }
 
 .sidebar ul {
     list-style: none;
-    padding: 0;
+    padding: 10px;
+    /* background-color: red; */
 }
 
 .sidebar ul li {
-    padding: 10px;
+    padding: 5px 30px;
     color: #dcddde;
     cursor: pointer;
     transition: background-color 0.2s ease;
     border-radius: 5px;
+    font-weight: bold;
 }
 
 .sidebar ul li:hover {
@@ -231,7 +295,7 @@ button:hover {
 }
 
 /* Notification Styling */
-.notification {
+/* .notification {
     display: none;
     position: fixed;
     right: 20px;
@@ -263,7 +327,74 @@ button:hover {
     color: #dcddde;
     font-size: 20px;
     cursor: pointer;
+} */
+
+.notification {
+    position: fixed;
+    right: -300px;
+    /* Start off-screen on the right */
+    bottom: 20px;
+    /* Notifications stack upwards from the bottom */
+    background-color: #333;
+    /* Dark background */
+    color: white;
+    /* Text color */
+    padding: 10px 20px;
+    /* Padding */
+    border-radius: 5px;
+    /* Rounded corners */
+    margin-bottom: 10px;
+    /* Spacing between notifications */
+    opacity: 0;
+    /* Hidden by default */
+    transition: opacity 0.3s ease, right 0.5s ease;
+    /* Transition for opacity and sliding in/out */
 }
+
+.notification.show {
+    opacity: 1;
+    /* Fade in */
+    right: 20px;
+    /* Slide in to the visible position from the right */
+}
+
+/* Keyframes for sliding out */
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        /* Start position */
+    }
+
+    to {
+        transform: translateX(100%);
+        /* Move to the right */
+    }
+}
+
+/* To apply the slide out animation */
+.notification.slide-out {
+    animation: slideOut 0.5s forwards;
+    /* Apply the slide out animation */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
@@ -319,7 +450,7 @@ input[type="text"] {
 input[type="text"]:focus {
     outline: none;
     /* Remove default outline */
-    border: 2px solid #7289DA;
+    border: 1px solid #7289DA;
     /* Discord blue border */
     box-shadow: 0 0 5px rgba(114, 137, 218, 0.5);
     /* Subtle glow effect */
@@ -332,128 +463,66 @@ input[type="text"]:focus {
 
 
 /* ======================================================================================= */
-
+/* Desktop Version */
 .user-profile {
     display: flex;
-    /* flex-direction: row; */
-    justify-content: center;
+    justify-content: space-between;
+    /* Space between user info and actions */
     align-items: center;
     background-color: #2f3136;
-    padding: 8px 20px;
+    padding: 10px 15px;
+    /* Adjusted padding for balance */
     border-radius: 5px;
     width: 100%;
-    /* Full width of the parent container */
     max-width: 100%;
-    /* Prevent overflowing the parent container */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    /* margin: 10px 0; */
     box-sizing: border-box;
-    /* Include padding in the element's width */
     overflow: hidden;
-    /* Ensure the content does not overflow */
-    gap: 10px;
 }
 
-
-
-
-
-
-.avatar {
+/* User Info */
+.user-info {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* align-items: center; */
-    /* background-color: red; */
-    flex-grow: 1;
-    max-width: 30%;
-    /* background-color: pink; */
-    gap: 0.4rem;
-}
-
-
-
-
-.avatar img {
-    border-radius: 50%;
-    width: 80%;
-    /* Scale based on the parent container */
-    /* max-width: 40px; */
-    /* Prevent the avatar from getting too large */
-    height: auto;
-    border: 2px solid #7289da;
-}
-
-.status {
-    font-size: 0.6rem;
-    color: #43b581;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    /* Ensure status text does not overflow */
-}
-
-
-.user-info {
-    margin-left: 10px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    /* Center user info vertically */
+    /* flex-grow: 1; */
+    /* Allow user info to grow and take remaining space */
+    margin-left: 15px;
+    /* Added margin for spacing */
     min-width: 0;
-    max-width: 70%;
-    /* Prevent flex items from expanding beyond their container */
-    /* align-items: start; */
-    /* background-color: red; */
+    /* Prevent overflow */
 }
 
 .username {
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    /* Increased font size for better readability */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    /* Truncate long names with "..." */
     max-width: 100%;
-    text-align: right;
-    /* background-color: yellow; */
+    text-align: left;
+    /* Align text to the left */
 }
 
+/* Actions */
 .actions {
     display: flex;
     flex-direction: row;
-    /* gap: 8px; */
-    /* align-items: center; */
-    /* margin-left: auto; */
-    /* flex-shrink: 0; */
-    /* Prevent shrinking of the icons */
-    justify-content: end;
-    /* background-color: black; */
-    gap: 0.3rem;
+    justify-content: flex-end;
+    /* Align actions to the end */
+    gap: 0.5rem;
+    /* Increased gap for better spacing */
     font-size: 0.8rem;
-
 }
 
 .actions div {
-
     cursor: pointer;
 }
 
-
-
-
-
-/* .actions{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    background-color: black;
-} */
-
 .actions i {
     font-size: 1rem;
-    /* Smaller icon size for compact design */
     cursor: pointer;
     color: #b9bbbe;
 }
@@ -462,7 +531,7 @@ input[type="text"]:focus {
     color: #fff;
 }
 
-/* Additional Styling for Online Status */
+/* Additional styling for online/offline status */
 .online {
     color: #43b581;
 }
@@ -471,12 +540,7 @@ input[type="text"]:focus {
     color: #747f8d;
 }
 
-
-
-
-
-
-
+/* Responsive Adjustments */
 
 
 
@@ -705,58 +769,11 @@ input[type="text"]:focus {
 
 
 
-
-
-
-
 /* Responsive design */
 
 
 
 
-@media (max-width: 768px) {
-
-
-
-
-    .channels {
-        display: none;
-        /* Hide sidebar and user profile */
-    }
-
-    .chat {
-        width: 100%;
-        /* Make chat area take full width */
-    }
-
-    .avatar img {
-        width: 20px;
-    }
-
-    .user-profile {
-        height: auto;
-        box-sizing: border-box;
-        /* Include padding in the element's width */
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-
-    .sidebar {
-        height: auto;
-        padding: 0px;
-    }
-
-
-    .actions {
-        gap: 10px;
-        font-size: 20px;
-    }
-
-
-}
 
 
 
@@ -769,16 +786,19 @@ input[type="text"]:focus {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(35, 39, 42, 0.9);
+    /* Dark semi-transparent background consistent with the chat theme */
 }
 
 .modal-content {
-    background-color: #2f3136;
-    color: white;
+    background-color: #40444b;
+    /* Matches the message background */
+    color: #f0f0f0;
+    /* Light text color for readability */
     margin: 15% auto;
-    /* Align modal content in the center */
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 5px;
+    /* Uniform 5px border radius on all corners */
     width: 400px;
     text-align: center;
     font-family: 'Arial', sans-serif;
@@ -788,24 +808,32 @@ input[type="text"]:focus {
     width: 80%;
     padding: 10px;
     margin: 10px 0;
+    background-color: #2f3136;
+    /* Dark background for input fields */
     border-radius: 5px;
+    /* 5px border radius for input fields */
     border: none;
     outline: none;
     font-size: 16px;
+    color: #f0f0f0;
+    /* Light text for consistency */
 }
 
 .modal-content button {
-    background-color: #5865F2;
+    background-color: #7289da;
+    /* Discord blue button */
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
+    /* Uniform 5px border radius for button */
     cursor: pointer;
     font-size: 16px;
 }
 
 .modal-content button:hover {
-    background-color: #4752C4;
+    background-color: #5a6fb0;
+    /* Slightly darker shade for hover effect */
 }
 
 .error {
@@ -816,14 +844,11 @@ input[type="text"]:focus {
 
 /* Username display */
 #username {
-    color: #fff;
+    color: #f0f0f0;
     font-size: 20px;
+    font-weight: 700;
+    /* Bold for emphasis */
 }
-
-
-
-
-
 
 
 
@@ -843,46 +868,46 @@ input[type="text"]:focus {
 .chat {
     position: relative;
     /* Set position to relative for child absolute positioning */
-    /* Add any other styles for your chat container */
+    /* No additional changes, chat container remains as is */
 }
 
 #loadingOverlay {
     position: absolute;
-    /* Position it relative to the .chat element */
+    /* Absolute positioning relative to the .chat container */
     top: 0;
-    /* Align it to the top */
     left: 0;
     right: 0;
-    /* Stretch across the width */
-    background: rgba(0, 0, 0, 0.7);
-    /* Semi-transparent background */
-    color: white;
+    bottom: 0;
+    background: rgba(35, 39, 42, 0.85);
+    /* Dark semi-transparent background consistent with the chat theme */
+    color: #f0f0f0;
+    /* Light text color */
     display: flex;
     align-items: center;
-    /* Center vertically */
     justify-content: center;
-    /* Center horizontally */
-    padding: 5px;
-    /* Add some padding */
+    padding: 10px;
     z-index: 1000;
     /* Ensure it appears above other content */
-    border-bottom: 1px solid #fff;
-    /* Optional: Add a bottom border */
+    border-bottom: 1px solid #7289da;
+    /* Optional: Discord blue bottom border */
+    height: 5%;
 }
 
+
+
+
+
 .loading-spinner {
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid white;
-    /* Spinner color */
+    border: 4px solid rgba(240, 240, 240, 0.2);
+    /* Lightened the spinner color */
+    border-top: 4px solid #f0f0f0;
+    /* Match spinner top border with text color */
     border-radius: 50%;
-    width: 20px;
-    /* Size of spinner */
-    height: 20px;
-    /* Size of spinner */
-    margin-right: 10px;
-    /* Space between spinner and text */
+    width: 25px;
+    height: 25px;
+    margin-right: 12px;
+    /* Adjust margin for better spacing */
     animation: spin 1s linear infinite;
-    /* Animation */
 }
 
 @keyframes spin {
@@ -899,26 +924,22 @@ input[type="text"]:focus {
 
 
 
-
-
-
-
-
-
 /* Typing bubble container styling */
 .typing-bubble {
     display: inline-flex;
     align-items: center;
-    background-color: #2f3136;
-    /* Dark Discord-like background */
-    color: #b9bbbe;
-    /* Light grey text */
-    padding: 6px 10px;
-    border-radius: 15px;
-    font-size: 12px;
+    background-color: #40444b;
+    /* Same dark background as individual messages */
+    color: #f0f0f0;
+    /* Light text color for consistency */
+    padding: 10px 15px;
+    border-radius: 20px 5px 5px 0px;
+    /* Match the message bubble corner shape */
+    font-size: 15px;
+    /* Match the message font size */
     max-width: fit-content;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    /* Subtle shadow */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    /* Subtle shadow for consistency */
 }
 
 /* Dots container (before the text) */
@@ -926,16 +947,16 @@ input[type="text"]:focus {
     display: inline-flex;
     justify-content: space-between;
     width: 24px;
-    /* Space for the dots */
-    margin-right: 8px;
+    margin-right: 10px;
+    /* Increased spacing to match other elements */
 }
 
 /* Single dot styling */
 .typing-dot {
-    width: 6px;
-    height: 6px;
-    background-color: #b9bbbe;
-    /* Light grey */
+    width: 8px;
+    height: 8px;
+    background-color: #dcddde;
+    /* Light grey text color, consistent with chat text */
     border-radius: 50%;
     animation: discord-typing 1.5s infinite ease-in-out;
 }
@@ -946,12 +967,10 @@ input[type="text"]:focus {
     0%,
     100% {
         transform: translateY(0);
-        /* Dots start and end at the same position */
     }
 
     50% {
         transform: translateY(-3px);
-        /* Bounce upward */
     }
 }
 
@@ -973,42 +992,54 @@ input[type="text"]:focus {
 
 
 
-
 /* General chat container */
 #messages {
-    background-color: #23272a; /* Deep dark background for a sleek look */
+    background-color: #23272a;
+    /* Deep dark background for a sleek look */
     padding: 12px;
-    border-radius: 12px;
+    /* border-radius: 12px; */
     overflow-y: auto;
-    max-height: 500px; /* Set the maximum height for scrollable content */
-    font-family: 'Arial', sans-serif; /* Change font for a more modern feel */
-    scrollbar-width: thin; /* For Firefox */
+    /* Set the maximum height for scrollable content */
+    font-family: 'Arial', sans-serif;
+    /* Change font for a more modern feel */
+    scrollbar-width: thin;
+    /* For Firefox */
 }
 
 /* Individual message styling */
 .message {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 15px; /* Ample space between messages */
+    margin-bottom: 15px;
+    /* Ample space between messages */
     padding: 10px 15px;
-    background-color: #40444b; /* Dark background for individual messages */
-    border-radius: 20px 5px 5px 0px; /* Dynamic corner shapes */
-    max-width:100%; /* Message box width */
-    color: #f0f0f0; /* Light text color for readability */
-    font-size: 15px; /* Slightly larger font size */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+    background-color: #40444b;
+    /* Dark background for individual messages */
+    border-radius: 20px 5px 5px 0px;
+    /* Dynamic corner shapes */
+    max-width: 100%;
+    /* Message box width */
+    color: #f0f0f0;
+    /* Light text color for readability */
+    font-size: 15px;
+    /* Slightly larger font size */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    /* Subtle shadow effect */
 }
 
 /* Style for username */
 .message strong {
-    color: #7289da; /* Discord blue for usernames */
-    font-weight: 700; /* Bold font for emphasis */
+    color: #7289da;
+    /* Discord blue for usernames */
+    font-weight: 700;
+    /* Bold font for emphasis */
     margin-right: 10px;
 }
 
 /* Message bubble text */
 .message span {
-    color: #dcddde; /* Light gray text color */
+    color: #dcddde;
+    /* Light gray text color */
 }
 
 /* Different background colors for alternating messages */
@@ -1018,22 +1049,228 @@ input[type="text"]:focus {
 
 /* Clean scrollbar styling */
 #messages::-webkit-scrollbar {
-    width: 8px; /* Wider scrollbar for better usability */
+    width: 8px;
+    /* Wider scrollbar for better usability */
 }
 
 #messages::-webkit-scrollbar-thumb {
-    background-color: #202225; /* Subtle scrollbar color */
-    border-radius: 5px; /* Rounded scrollbar */
+    background-color: #202225;
+    /* Subtle scrollbar color */
+    border-radius: 5px;
+    /* Rounded scrollbar */
 }
 
 /* Styling system messages */
 .system-message {
     padding: 6px 12px;
-    background-color: #292b2f; /* Background for system messages */
-    color: #b9bbbe; /* Light color for system messages */
-    border-radius: 10px; /* Rounded corners */
-    font-size: 13px; /* Smaller font size for system messages */
+    background-color: #292b2f;
+
+    /* Background for system messages */
+    color: #b9bbbe;
+    /* Light color for system messages */
+    border-radius: 10px;
+    /* Rounded corners */
+    font-size: 13px;
+    /* Smaller font size for system messages */
     margin-bottom: 12px;
     text-align: center;
     max-width: fit-content;
+}
+
+
+
+
+
+
+/* User Profile Section */
+.user-profile {
+    display: flex;
+    /* Flexbox layout */
+    justify-content: space-between;
+    /* Space between user info and actions */
+    align-items: center;
+    /* Center align items vertically */
+    background-color: #2f3136;
+    /* Dark background for user profile */
+
+    padding: 10px;
+    /* Padding for user profile */
+    border-radius: 5px;
+    /* Rounded corners */
+    width: 100%;
+    /* Full width of the container */
+    box-sizing: border-box;
+    /* Include padding in width */
+}
+
+/* User Info */
+.user-info {
+    display: flex;
+    /* Flexbox for user info */
+    align-items: center;
+    /* Center align user info vertically */
+    flex-grow: 1;
+    /* Allow user info to take remaining space */
+    overflow: hidden;
+    /* Prevent overflow */
+}
+
+/* Username Styling */
+.username {
+    font-weight: bold;
+    /* Bold username */
+    color: #ffffff;
+    /* White text for username */
+    margin-right: 10px;
+    /* Space between username and actions */
+    white-space: nowrap;
+    /* Prevent text wrapping */
+    overflow: hidden;
+    /* Prevent overflow */
+    text-overflow: ellipsis;
+    /* Show ellipsis if text is too long */
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    /* Flexbox for actions */
+    gap: 10px;
+    /* Space between action icons */
+    align-items: center;
+    /* Center align icons vertically */
+}
+
+/* Action Icons */
+.icon-settings,
+.icon-ghost {
+    color: #b9bbbe;
+    /* Light gray for action icons */
+    cursor: pointer;
+    /* Pointer cursor for clickable icons */
+    transition: color 0.3s;
+    /* Smooth color transition */
+    font-size: 1.2rem;
+    /* Adjust icon size */
+}
+
+.icon-settings:hover,
+.icon-ghost:hover {
+    color: #ffffff;
+    /* Change color on hover */
+}
+
+
+
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+
+    .channels {
+        display: none;
+    }
+
+    .container {
+        margin: 0;
+        padding: 0;
+    }
+
+
+
+    .user-profile {
+        border-radius: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .user-info {
+        width: 100%;
+        margin-left: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: start;
+        padding: 15px 20px 10px 20px;
+        border-radius: 0;
+        background-color: #5A626A;
+        /* Latest background color */
+        color: white;
+        /* White text for readability */
+        cursor: pointer;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+        /* Deeper shadow effect */
+    }
+
+    .username {
+        font-size: 1.1rem;
+        text-align: left;
+        width: 100%;
+        align-self: center;
+        align-content: center;
+        align-content: center;
+
+    }
+
+    .actions {
+
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+
+    }
+
+
+
+
+
+    .sidebar {
+        height: auto;
+        /* padding: 10px; */
+        background-color: #40444b;
+        /* Sidebar background consistent with chat theme */
+        color: #f0f0f0;
+        /* Light text color for readability */
+        margin: 0;
+        padding: 0;
+    }
+}
+
+
+
+
+
+
+#typing-message {
+    background-color: #40444b;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.countdown {
+    font-size: 0.7rem; /* Keeping the original font size */
+    color: #FF4757 !important; /* Red color for text */
+    font-weight: bold; /* Makes the text bold */
+    text-align: center; /* Center the text */
+    background-color: rgba(30, 30, 30, 0.8); /* Dark semi-transparent background */
+    border-radius: 5px; /* Slightly rounded corners */
+    padding: 1px 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Deeper shadow for depth */
+    animation: pulse 1s infinite; /* Optional pulse effect */
+    margin-left: 10px; /* Spacing on the left */
+    border: 1px solid #FF4757; /* Red border for added styling */
 }

@@ -64,62 +64,7 @@ const fetchMessages = async (timestamp = null, limit = 20) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 io.on('connection', (socket) => {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     fetchMessages().then(messages => {
@@ -133,7 +78,6 @@ io.on('connection', (socket) => {
     // Event listener for loading earlier messages
     socket.on('loadOlderMessage', async (olderMessagTimestamp) => {
         try {
-            // console.log(`Loading messages earlier than timestamp: ${olderMessagTimestamp}`);
 
             // Call fetchMessages with the olderMessagTimestamp
             const olderMessages = await fetchMessages(olderMessagTimestamp);
@@ -154,7 +98,6 @@ io.on('connection', (socket) => {
             });
 
             await newMessage.save(); // This will include the timestamp automatically
-            // console.log('Message stored:', newMessage);
 
             // Broadcast the stored message to all other clients
             io.emit('receive', {
@@ -179,8 +122,7 @@ io.on('connection', (socket) => {
             message: message,
             expirationTime: expirationTime
         });
-        console.log(data);
-        console.log(ghostTimer);
+
 
         try {
             const savedMessage = await newMessage.save(); // Save message using async/await
